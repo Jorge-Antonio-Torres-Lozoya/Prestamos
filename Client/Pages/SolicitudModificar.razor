@@ -1,0 +1,69 @@
+﻿@page "/solicitud/modificar/{Id:int}"
+@using Microsoft.AspNetCore.Components
+@using Servicios_Prestamos.Shared.Modelos
+@inject HttpClient http
+@inject NavigationManager navegar
+<h3>Nueva Venta</h3>
+<EditForm Model="laSolicitud" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="correo" class="form-label">Monto del prestamo</label>
+        <InputNumber class="form-control" id="correo" @bind-Value="laSolicitud.Monto_Prestamo" />
+        <ValidationMessage For="(()=>laSolicitud.Monto_Prestamo)" />
+    </div>
+    <div class="mb-3">
+        <label for="fecha" class="form-label">Fecha de solicitud</label>
+        <InputDate class="form-control" id="fecha" @bind-Value="laSolicitud.Fecha_Solicitud" />
+        <ValidationMessage For="(()=>laSolicitud.Fecha_Solicitud)" />
+    </div>
+    <div class="mb-3">
+        <label for="clienteid" class="form-label">Estado de la solicitud</label>
+        <InputCheckbox class="mx-2 pt-3" id="clienteid" @bind-Value="laSolicitud.Estado_Solicitud" />
+        <ValidationMessage For="(()=>laSolicitud.Estado_Solicitud)" />
+    </div>
+    <div class="mb-3">
+        <label for="correo" class="form-label">Tasa de interes</label>
+        <InputNumber class="form-control" id="correo" @bind-Value="laSolicitud.Tasa_Interes" />
+        <ValidationMessage For="(()=>laSolicitud.Tasa_Interes)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="correo" class="form-label">Plazo a meses</label>
+        <InputNumber class="form-control" id="correo" @bind-Value="laSolicitud.Plazo_meses" />
+        <ValidationMessage For="(()=>laSolicitud.Plazo_meses)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="correo" class="form-label">Id usuario</label>
+        <InputNumber class="form-control" id="correo" @bind-Value="laSolicitud.UsuarioId" />
+        <ValidationMessage For="(()=>laSolicitud.UsuarioId)" />
+    </div>
+
+
+
+    <button type="submit" class="btn btn-primary mx-2">Guardar</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Solicitud_Prestamo laSolicitud = new Solicitud_Prestamo();
+    protected override async Task OnInitializedAsync()
+    {
+        laSolicitud = await http.GetFromJsonAsync<Solicitud_Prestamo>($"api/solicitud_prestamo/{Id}");
+    }
+    private async void Modificar()
+
+    {
+        await http.PutAsJsonAsync($"api/solicitud_prestamo/{Id}", laSolicitud);
+        navegar.NavigateTo("/solicitudes");
+    }
+    private void Cancelar()
+    {
+        navegar.NavigateTo("/solicitudes");
+    }
+}
+

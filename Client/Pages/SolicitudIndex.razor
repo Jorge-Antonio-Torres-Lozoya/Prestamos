@@ -1,0 +1,89 @@
+﻿@page "/solicitudes"
+@using Servicios_Prestamos.Shared.Modelos;
+@inject HttpClient http
+@inject NavigationManager navegar
+
+<h3 class="my-2">Solicitud de prestamos</h3>
+
+@if (lasSolicitudes == null)
+
+{
+    <p class="my-2 mx-2"><em>Loading....</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="text-center">Id</th>
+                <th class="text-center">Monto del prestamo</th>
+                <th class="text-center">Fecha de solicitud</th>
+                <th class="text-center">Estado de la solicitud</th>
+                <th class="text-center">Tasa de interes</th>
+                <th class="text-center">Plazo a meses</th>
+                <th class="text-center">Id del usuario</th>
+                <th class="text-center">Acciones</th>
+              
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var solicitud in lasSolicitudes)
+            {
+
+                <tr>
+                    <td class="text-center">@solicitud.SolicitudId</td>
+                    <td class="text-center">@solicitud.Monto_Prestamo</td>
+                    <td class="text-center">@solicitud.Fecha_Solicitud</td>
+                    <td class="text-center">@((solicitud.Estado_Solicitud) ? "Aceptado" : "Rechazado")</td>
+                    <td class="text-center">@solicitud.Tasa_Interes</td>
+                    <td class="text-center">@solicitud.Plazo_meses</td>
+                    <td class="text-center">@solicitud.UsuarioId</td>
+
+
+
+                
+
+
+
+                    <td class="text-center">
+                        <button class="btn-danger mx-3" @onclick="(()=>Eliminar(solicitud.SolicitudId))"><span class="oi oi-trash "></span></button>
+                        <button class="btn-secondary" @onclick="(()=>Modificar(solicitud.SolicitudId))">
+                            <span class=" oi oi-pencil"></span>
+
+                        </button>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<button class="btn btn-primary my-2" @onclick="Agregar">Nueva solicitud<span class="oi oi-plus mx-2"></span></button>
+@code {
+    private List<Solicitud_Prestamo> lasSolicitudes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        lasSolicitudes = await http.GetFromJsonAsync<List<Solicitud_Prestamo>>("api/solicitud_prestamo");
+    }
+    private void Agregar()
+    {
+        navegar.NavigateTo("/solicitud/nuevo");
+    }
+    private async void Eliminar(int id)
+    {
+        await http.DeleteAsync($"api/solicitud_prestamo/{id}");
+        lasSolicitudes = await http.GetFromJsonAsync<List<Solicitud_Prestamo>>("api/solicitud_prestamo");
+        StateHasChanged();
+    }
+    private void Modificar(int id)
+    {
+        navegar.NavigateTo($"/solicitud/modificar/{id}");
+    }
+
+
+
+
+}
